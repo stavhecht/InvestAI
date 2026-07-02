@@ -1,14 +1,16 @@
-"""stdio MCP client — used for the Yahoo Finance and (locally) SEC EDGAR
-servers. stdio is dev/local-only: the AWS profile drops Yahoo and runs EDGAR's
+"""stdio MCP client — Yahoo Finance and (locally) SEC EDGAR servers.
+
+stdio is dev/local-only: the AWS profile drops Yahoo and runs EDGAR's
 streamable-HTTP mode on Fargate instead (see CLAUDE.md data-source table).
-Phase 1."""
+"""
 
-from typing import Any
+from mcp import StdioServerParameters
+from mcp.client.stdio import get_default_environment, stdio_client
 
-from investai.dataaccess.interface import ToolSpec
+from investai.dataaccess.mcp_base import BaseMcpSource
 
 
-class StdioMcpSource:
+class StdioMcpSource(BaseMcpSource):
     def __init__(
         self,
         name: str,
@@ -16,14 +18,14 @@ class StdioMcpSource:
         args: list[str] | None = None,
         env: dict[str, str] | None = None,
     ) -> None:
-        self.name = name
-        self._command = command
-        self._args = args or []
-        self._env = env or {}
+        super().__init__(name)
+        self._params = StdioServerParameters(
+            command=command,
+            args=args or [],
+            # SDK replaces the environment wholesale — merge over the safe
+            # defaults or the child loses PATH/HOME and won't start.
+            env={**get_default_environment(), **(env or {})},
+        )
 
-    async def list_tools(self) -> list[ToolSpec]:
-        # Phase 1: mcp.client.stdio session -> list_tools()
-        raise NotImplementedError("Phase 1: stdio MCP client")
-
-    async def call_tool(self, name: str, arguments: dict[str, Any]) -> Any:
-        raise NotImplementedError("Phase 1: stdio MCP client")
+    def _transport(self):
+        return stdio_client(self._params)

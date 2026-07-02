@@ -11,6 +11,10 @@ from typing import Any, Protocol
 from pydantic import BaseModel
 
 
+class DataSourceError(RuntimeError):
+    """A source failed to answer — callers may try the next source in the chain."""
+
+
 class ToolSpec(BaseModel):
     name: str
     description: str

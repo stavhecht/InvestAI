@@ -35,3 +35,9 @@ FALLBACK_CHAINS: dict[str, dict[str, list[str]]] = {
 def is_israeli(symbol: str) -> bool:
     s = symbol.upper()
     return s.endswith(TA_SUFFIX) or s.startswith("^TA")
+
+
+def is_ta_index(symbol: str) -> bool:
+    """TA indices quote in ILS; TASE equities quote in agorot (spike-verified)."""
+    s = symbol.upper()
+    return s.startswith("^TA") or s in {v.upper() for v in TA_INDEX_SYMBOLS.values()}

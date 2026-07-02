@@ -116,7 +116,7 @@ Hebrew query on English corpus; intraday request → flag delayed/EOD).
 | Phase | Scope | Status |
 |---|---|---|
 | P0 | Scaffold, docker-compose, seam protocols, CLAUDE.md, TASE registration, symbol spike | ✅ (TASE registration = user action, pending) |
-| P1 | Data-access layer: MCP clients (both transports), 3 sources, registry, models | ☐ |
+| P1 | Data-access layer: MCP clients (both transports), 3 sources, registry, models | ✅ (AV parser unverified — needs key) |
 | P2 | RAG pipeline + retrieval evals (corpus: eval tickers' filings) | ☐ |
 | P3 | Agents + state machine + deterministic analysis tools; CLI end-to-end | ☐ |
 | P4 | FastAPI + full eval harness | ☐ |
@@ -138,6 +138,16 @@ Hebrew query on English corpus; intraday request → flag delayed/EOD).
 - **2026-07-02:** CYBR returns no data on Yahoo (likely delisted post-acquisition) —
   drop it from the eval ticker list; NICE/CHKP/TEVA confirmed working. CYBR's historical
   SEC filings may still serve the RAG corpus — decide at Phase 2 corpus freeze.
+- **2026-07-02 (P1):** Yahoo MCP server = `uvx mcp-yahoo-finance` (10 tools). Its
+  `get_current_stock_price` returns a BARE float with no currency — currency is inferred
+  from the registry rule (TASE equity=ILA, TA index=ILS, else USD) in `quotes.py`.
+- **2026-07-02 (P1):** SEC EDGAR MCP = `uvx sec-edgar-mcp` (21 tools). It has
+  `get_filing_sections(identifier, accession_number, form_type)` — use it as the section
+  source in Phase 2 instead of hand-parsing 10-K HTML.
+- **2026-07-02 (P1):** Fallback happens at the CAPABILITY level (`quotes.get_quote`
+  walks the chain with per-source parsers), not the raw tool level — tool names differ
+  per server. Alpha Vantage parser written against documented GLOBAL_QUOTE shape;
+  **verify live once ALPHAVANTAGE_API_KEY is set** (TODO in quotes.py).
 
 ## Developer context
 
