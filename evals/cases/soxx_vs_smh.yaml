@@ -1,0 +1,19 @@
+# Flagship eval case. `value: null` fields are pinned when the Phase 2 corpus
+# snapshot is frozen — ground truth comes from documents we control, not live quotes.
+id: soxx-vs-smh-overlap
+question: "Compare SOXX vs SMH — holdings overlap and expense ratios."
+market: us
+requires_sources:
+  - "SOXX prospectus/holdings"
+  - "SMH prospectus/holdings"
+expected_facts:
+  - name: expense_ratio_soxx
+    value: null # TODO: pin at corpus freeze
+    tolerance: 0.0001
+  - name: expense_ratio_smh
+    value: null # TODO: pin at corpus freeze
+    tolerance: 0.0001
+  - name: weight_overlap
+    value: null # TODO: pin at corpus freeze (analysis.overlap on frozen holdings)
+    tolerance: 0.01
+metrics: [fact_accuracy, citation_coverage, citation_faithfulness, hallucination_rate]

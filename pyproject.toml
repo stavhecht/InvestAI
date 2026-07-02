@@ -1,0 +1,44 @@
+[project]
+name = "investai"
+version = "0.1.0"
+description = "AI Personal Finance Research Desk — multi-agent investment research for US + Israeli markets"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40",
+    "voyageai>=0.3",
+    "mcp>=1.2",
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "uvicorn[standard]>=0.32",
+    "httpx>=0.27",
+    "psycopg[binary]>=3.2",
+    "pgvector>=0.3",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+    "yfinance>=0.2",  # spike scripts / dev-time symbol checks only — runtime goes through MCP
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/investai"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

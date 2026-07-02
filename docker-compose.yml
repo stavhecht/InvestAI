@@ -1,0 +1,22 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16 # multi-arch — runs natively on Apple Silicon
+    environment:
+      POSTGRES_USER: investai
+      POSTGRES_PASSWORD: investai # local dev only; AWS uses RDS + Secrets Manager
+      POSTGRES_DB: investai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U investai"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # `api` service (FastAPI container) lands in Phase 4.
+  # Phases 0-3 run via `uv run` against this db.
+
+volumes:
+  pgdata:
